@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    container_name: gitlab
+    restart: always
+    environment:
+      # GitLab配置设置
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url = 'http://192.168.5.246:18080'
+        gitlab_rails['gitlab_shell_ssh_port'] = 12222
+        gitlab_rails['time_zone'] = 'Asia/Shanghai'
+        nginx['listen_https'] = false
+        prometheus_monitoring['enable'] = false
+        postgresql['shared_buffers'] = "256MB"
+    ports:
+      - "18080:80" 
+      - "12222:22" 
+    volumes:
+      - '/opt/shared/docker/gitlab/config:/etc/gitlab'
+      - '/opt/shared/docker/gitlab/logs:/var/log/gitlab'
+      - '/opt/shared/docker/gitlab/data:/var/opt/gitlab'
+    shm_size: '256m'
+    networks:
+      - gitlab-network
+
+networks:
+  gitlab-network:
+    driver: bridge
